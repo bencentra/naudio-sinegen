@@ -34,25 +34,8 @@ namespace naudio_sinegen
         //Event handler for clicking the button
         private void playButton_Click(object sender, RoutedEventArgs e)
         {
-            //Grab the frequency value out of the text box
-            float customFreq;
-            if (freqBox.Text.Trim() == "")
-            {
-                customFreq = 440;
-            }
-            else
-            {
-                customFreq = float.Parse(freqBox.Text);
-                if (customFreq < 20)
-                {
-                    customFreq = 20;
-                }
-                else if (customFreq > 20000)
-                {
-                    customFreq = 20000;
-                }
-            }
-            freqBox.Text = customFreq.ToString();
+            //Get the frequency of the wave from the text box
+            float customFreq = GetFrequency();
             //Play or stop the sine wave
             StartStopSineWave(customFreq);
             //Set the text of the button appropirately
@@ -72,30 +55,78 @@ namespace naudio_sinegen
             //If the wave isn't playing, start it
             if (wave == null)
             {
-                if (freq == -1)
-                {
-                    freq = 440;
-                }
-                //Create a new sine wave provider
-                var sineWaveProvider = new SineWaveProvider32();
-                //Set the sample rate, number of channels, frequency and amplitude
-                sineWaveProvider.SetWaveFormat(44100, 1); //16kHz, mono
-                sineWaveProvider.Frequency = freq;
-                sineWaveProvider.Amplitude = 0.25f;
-                //Instantiate the wave output object
-                wave = new WaveOut();
-                //Initialize and play the sine wave
-                wave.Init(sineWaveProvider);
-                wave.Play();
+                StartSineWave(freq);
             }
             //If the wave is playing, stop it
             else
             {
                 //Stop the wave object and destroy it's data
-                wave.Stop();
-                wave.Dispose();
-                wave = null;
+                StopSineWave();
             }
+        }
+
+        private void updateButton_Click(object sender, RoutedEventArgs e)
+        {
+            //Get the frequency of the wave from the text box
+            float customFreq = GetFrequency();
+            //Update the sine wave
+            UpdateSineWave(customFreq);
+        }
+
+        private void UpdateSineWave(float freq)
+        {
+            StopSineWave();
+            StartSineWave(freq);
+        }
+
+        private void StartSineWave(float freq)
+        {
+            if (freq == -1)
+            {
+                freq = 440;
+            }
+            //Create a new sine wave provider
+            var sineWaveProvider = new SineWaveProvider32();
+            //Set the sample rate, number of channels, frequency and amplitude
+            sineWaveProvider.SetWaveFormat(44100, 1); //16kHz, mono
+            sineWaveProvider.Frequency = freq;
+            sineWaveProvider.Amplitude = 0.25f;
+            //Instantiate the wave output object
+            wave = new WaveOut();
+            //Initialize and play the sine wave
+            wave.Init(sineWaveProvider);
+            wave.Play();
+        }
+
+        private void StopSineWave()
+        {
+            wave.Stop();
+            wave.Dispose();
+            wave = null;
+        }
+
+        //Grab the frequency value out of the text box
+        private float GetFrequency()
+        {
+            float customFreq;
+            if (freqBox.Text.Trim() == "")
+            {
+                customFreq = 440;
+            }
+            else
+            {
+                customFreq = float.Parse(freqBox.Text);
+                if (customFreq < 20)
+                {
+                    customFreq = 20;
+                }
+                else if (customFreq > 20000)
+                {
+                    customFreq = 20000;
+                }
+            }
+            freqBox.Text = customFreq.ToString();
+            return customFreq;
         }
 
     }
