@@ -25,17 +25,24 @@ namespace naudio_sinegen
         //Variable to output the sin wave
         private WaveOut wave;
 
+        //Min and Max allowable frequencies
+        private const float MAX_FREQ = 5000;
+        private const float MIN_FREQ = 50;
+        private const float START_FREQ = 440;
+
         //Default Constructor
         public MainWindow()
         {
             InitializeComponent();
+            freqBox.Text = START_FREQ.ToString();
+            freqSlider.Value = (START_FREQ / MAX_FREQ) * 10;
         }
 
-        //Event handler for clicking the button
+        //Event handler for clicking the play button
         private void playButton_Click(object sender, RoutedEventArgs e)
         {
             //Get the frequency of the wave from the text box
-            float customFreq = GetFrequency();
+            float customFreq = GetTextFrequency();
             //Play or stop the sine wave
             StartStopSineWave(customFreq);
             //Set the text of the button appropirately
@@ -49,7 +56,7 @@ namespace naudio_sinegen
             }
         }
 
-        //Method for playing/stopping the sin wave
+        //Method for toggling the sine wave
         private void StartStopSineWave(float freq)
         {
             //If the wave isn't playing, start it
@@ -65,20 +72,23 @@ namespace naudio_sinegen
             }
         }
 
+        //Event handler for clicking the update button
         private void updateButton_Click(object sender, RoutedEventArgs e)
         {
             //Get the frequency of the wave from the text box
-            float customFreq = GetFrequency();
+            float customFreq = GetTextFrequency();
             //Update the sine wave
             UpdateSineWave(customFreq);
         }
 
+        //Update the frequency of the sine wave without stopping it (sorta)
         private void UpdateSineWave(float freq)
         {
             StopSineWave();
             StartSineWave(freq);
         }
 
+        //Start playing the sine wave
         private void StartSineWave(float freq)
         {
             if (freq == -1)
@@ -98,6 +108,7 @@ namespace naudio_sinegen
             wave.Play();
         }
 
+        //Stop playing the sine wave
         private void StopSineWave()
         {
             wave.Stop();
@@ -106,7 +117,7 @@ namespace naudio_sinegen
         }
 
         //Grab the frequency value out of the text box
-        private float GetFrequency()
+        private float GetTextFrequency()
         {
             float customFreq;
             if (freqBox.Text.Trim() == "")
@@ -116,16 +127,44 @@ namespace naudio_sinegen
             else
             {
                 customFreq = float.Parse(freqBox.Text);
-                if (customFreq < 20)
+                if (customFreq < MIN_FREQ)
                 {
-                    customFreq = 20;
+                    customFreq = MIN_FREQ;
                 }
-                else if (customFreq > 20000)
+                else if (customFreq > MAX_FREQ)
                 {
-                    customFreq = 20000;
+                    customFreq = MAX_FREQ;
                 }
             }
             freqBox.Text = customFreq.ToString();
+            freqSlider.Value = (customFreq / MAX_FREQ) * 10;
+            return customFreq;
+        }
+
+        //Event handler for changing the frequency slider
+        private void freqSlider_Change(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Console.Out.WriteLine(freqSlider.Value);
+            float freq = GetSliderFrequency();
+            if (wave != null)
+                UpdateSineWave(freq);
+        }
+
+        //Get the frequency based on the slider's position
+        private float GetSliderFrequency()
+        {
+            float value = (float)freqSlider.Value;
+            float customFreq = MAX_FREQ * (value / 10);
+            if (customFreq < MIN_FREQ)
+            {
+                customFreq = MIN_FREQ;
+            }
+            else if (customFreq > MAX_FREQ)
+            {
+                customFreq = MAX_FREQ;
+            }
+            freqBox.Text = customFreq.ToString();
+            freqSlider.Value = (customFreq / MAX_FREQ) * 10;
             return customFreq;
         }
 
