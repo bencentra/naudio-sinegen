@@ -36,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Kinect, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="NAudio">
       <HintPath>..\packages\NAudio.1.7-alpha02\lib\net35\NAudio.dll</HintPath>
     </Reference>
@@ -58,7 +59,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="SineWaveProvider32.cs" />
+    <Compile Include="KinectHelper.cs" />
+    <Compile Include="PortamentoSineWaveProvider32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SineWavePlayer.cs" />
+    <Compile Include="SineWaveProvider32.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
